@@ -1,1 +1,861 @@
-# MathQuest456.github.io
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathQuest: Function — Proyecto Educativo</title>
+<meta name="description" content="MathQuest: Function es un videojuego educativo en desarrollo que busca transformar el aprendizaje de funciones matemáticas para estudiantes de nivel medio superior en México.">
+<meta name="keywords" content="videojuego educativo, matemáticas, funciones, bachillerato, gamificación, aprendizaje, México, NMS, proyecto estudiantil">
+<meta property="og:title" content="MathQuest: Function — Proyecto Educativo">
+<meta property="og:description" content="Conoce MathQuest: Function, el videojuego educativo que busca transformar la enseñanza de las matemáticas en México.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root {
+  --orange: #E8450A;
+  --orange-light: #ff5a1f;
+  --blue: #2B8FD4;
+  --blue-light: #4aa8ef;
+  --yellow: #F5C842;
+  --dark: #141414;
+  --dark2: #1c1c1c;
+  --card-bg: #1f1f1f;
+  --card-border: rgba(255,255,255,0.06);
+  --white: #ffffff;
+  --muted: #a0a0a0;
+  --radius: 18px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Nunito', sans-serif; background: var(--dark); color: var(--white); overflow-x: hidden; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--dark); }
+::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 10px; }
+
+.bg-blob { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.1; pointer-events: none; z-index: 0; }
+.blob-1 { width: 600px; height: 600px; background: var(--orange); top: -200px; right: -150px; }
+.blob-2 { width: 500px; height: 500px; background: var(--blue); bottom: -100px; left: -150px; }
+.blob-3 { width: 300px; height: 300px; background: var(--yellow); top: 50%; left: 40%; }
+
+
+.notice-banner {
+  position: relative;
+  z-index: 900;
+  background: rgba(43,143,212,0.12);
+  border-bottom: 1px solid rgba(43,143,212,0.25);
+  text-align: center;
+  padding: 10px 24px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--blue-light);
+  letter-spacing: 0.2px;
+}
+.notice-banner span { opacity: 0.7; }
+
+
+nav {
+  position: fixed; top: 36px; left: 0; right: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 48px;
+  background: rgba(20,20,20,0.88); backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--card-border);
+  transition: top 0.3s;
+}
+nav.scrolled { top: 0; }
+.nav-logo img { height: 44px; object-fit: contain; }
+.nav-logo-text { display:none; font-family:'Fredoka One',cursive; font-size:1.4rem; color:var(--orange); }
+.nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+.nav-links a { color: var(--muted); text-decoration: none; font-weight: 700; font-size: 0.9rem; transition: color 0.2s; }
+.nav-links a:hover { color: var(--white); }
+.nav-actions { display: flex; align-items: center; gap: 12px; }
+.btn-outline { padding: 9px 22px; border: 2px solid var(--orange); background: transparent; color: var(--orange); border-radius: 50px; font-family: 'Nunito',sans-serif; font-weight: 800; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.btn-outline:hover { background: var(--orange); color: var(--white); }
+.btn-primary { padding: 9px 22px; background: var(--orange); color: var(--white); border: 2px solid var(--orange); border-radius: 50px; font-family: 'Nunito',sans-serif; font-weight: 800; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.btn-primary:hover { background: var(--orange-light); transform: translateY(-1px); }
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+.hamburger span { display: block; width: 24px; height: 2px; background: var(--white); border-radius: 2px; }
+
+
+#inicio { position: relative; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 150px 24px 90px; z-index: 1; }
+.hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(232,69,10,0.15); border: 1px solid rgba(232,69,10,0.35); color: var(--orange); padding: 6px 18px; border-radius: 50px; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 28px; animation: fadeUp 0.6s ease both; }
+.hero-badge::before { content: ''; width: 7px; height: 7px; background: var(--orange); border-radius: 50%; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(1.4); } }
+.hero-logo { width: min(360px,78vw); margin-bottom: 32px; animation: fadeUp 0.7s ease 0.1s both; filter: drop-shadow(0 12px 40px rgba(232,69,10,0.28)); }
+.hero-title { font-family: 'Fredoka One',cursive; font-size: clamp(2.4rem,6vw,4.2rem); line-height: 1.1; margin-bottom: 20px; animation: fadeUp 0.7s ease 0.2s both; }
+.accent-orange { color: var(--orange); }
+.accent-blue { color: var(--blue); }
+.accent-yellow { color: var(--yellow); }
+.hero-sub { font-size: clamp(1rem,2.5vw,1.15rem); color: var(--muted); max-width: 600px; line-height: 1.8; margin-bottom: 20px; animation: fadeUp 0.7s ease 0.3s both; }
+
+
+.proyecto-callout {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(43,143,212,0.1);
+  border: 1px solid rgba(43,143,212,0.3);
+  border-radius: 14px;
+  padding: 14px 22px;
+  margin-bottom: 38px;
+  max-width: 560px;
+  text-align: left;
+  animation: fadeUp 0.7s ease 0.35s both;
+}
+.callout-icon { font-size: 1.6rem; flex-shrink: 0; }
+.callout-text { font-size: 0.88rem; color: #a8ceea; line-height: 1.5; font-weight: 600; }
+.callout-text strong { color: var(--blue-light); }
+
+.hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; animation: fadeUp 0.7s ease 0.4s both; }
+.btn-big { padding: 15px 36px; font-size: 1rem; border-radius: 50px; font-weight: 800; cursor: pointer; font-family: 'Nunito',sans-serif; transition: all 0.22s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+.btn-big-primary { background: var(--orange); color: var(--white); border: 2px solid var(--orange); box-shadow: 0 8px 32px rgba(232,69,10,0.35); }
+.btn-big-primary:hover { background: var(--orange-light); box-shadow: 0 12px 40px rgba(232,69,10,0.5); transform: translateY(-2px); }
+.btn-big-secondary { background: rgba(255,255,255,0.07); color: var(--white); border: 2px solid var(--card-border); }
+.btn-big-secondary:hover { background: rgba(255,255,255,0.13); transform: translateY(-2px); }
+
+.hero-platforms { margin-top: 52px; animation: fadeUp 0.7s ease 0.5s both; }
+.hero-platforms p { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 14px; }
+.platform-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.chip { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 50px; padding: 6px 16px; font-size: 0.82rem; font-weight: 700; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+.scroll-hint { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--muted); font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; animation: bounce 2s infinite; }
+@keyframes bounce { 0%,100% { transform:translateX(-50%) translateY(0); } 50% { transform:translateX(-50%) translateY(6px); } }
+
+
+section { position: relative; z-index: 1; }
+.container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+.section-header { text-align: center; margin-bottom: 56px; }
+.section-tag { display: inline-block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--orange); margin-bottom: 12px; }
+.section-title { font-family: 'Fredoka One',cursive; font-size: clamp(1.8rem,4vw,2.8rem); line-height: 1.15; margin-bottom: 14px; }
+.section-desc { color: var(--muted); font-size: 1rem; max-width: 560px; margin: 0 auto; line-height: 1.75; }
+
+
+.stats-strip { background: var(--card-bg); border-top: 1px solid var(--card-border); border-bottom: 1px solid var(--card-border); padding: 44px 24px; position: relative; z-index: 1; }
+.stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; max-width: 900px; margin: 0 auto; }
+.stat-item { text-align: center; padding: 0 32px; border-right: 1px solid var(--card-border); }
+.stat-item:last-child { border-right: none; }
+.stat-num { font-family: 'Fredoka One',cursive; font-size: 2.6rem; color: var(--orange); line-height: 1; margin-bottom: 8px; }
+.stat-num span { color: var(--yellow); }
+.stat-label { font-size: 0.85rem; color: var(--muted); font-weight: 700; line-height: 1.4; }
+.stat-note { font-size: 0.72rem; color: #666; font-weight: 600; margin-top: 4px; }
+
+
+#caracteristicas { padding: 100px 24px; }
+.features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.feature-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 36px 28px; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s; position: relative; overflow: hidden; }
+.feature-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg,rgba(232,69,10,0.06) 0%,transparent 60%); opacity: 0; transition: opacity 0.3s; }
+.feature-card:hover::before { opacity: 1; }
+.feature-card:hover { transform: translateY(-5px); border-color: rgba(232,69,10,0.3); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.feature-card.blue-accent::before { background: linear-gradient(135deg,rgba(43,143,212,0.06) 0%,transparent 60%); }
+.feature-card.blue-accent:hover { border-color: rgba(43,143,212,0.3); }
+.feature-card.yellow-accent::before { background: linear-gradient(135deg,rgba(245,200,66,0.06) 0%,transparent 60%); }
+.feature-card.yellow-accent:hover { border-color: rgba(245,200,66,0.3); }
+.feature-icon { width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin-bottom: 20px; }
+.icon-orange { background: rgba(232,69,10,0.15); }
+.icon-blue   { background: rgba(43,143,212,0.15); }
+.icon-yellow { background: rgba(245,200,66,0.15); }
+.feature-card h3 { font-family: 'Fredoka One',cursive; font-size: 1.25rem; margin-bottom: 10px; }
+.feature-card p { color: var(--muted); font-size: 0.92rem; line-height: 1.65; }
+
+
+#como-funciona { padding: 100px 24px; background: var(--dark2); border-top: 1px solid var(--card-border); border-bottom: 1px solid var(--card-border); }
+.steps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; position: relative; }
+.steps-grid::before { content: ''; position: absolute; top: 40px; left: 12.5%; right: 12.5%; height: 2px; background: linear-gradient(90deg,var(--orange),var(--blue),var(--yellow),var(--orange)); opacity: 0.25; }
+.step-item { text-align: center; padding: 0 20px; position: relative; }
+.step-num { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Fredoka One',cursive; font-size: 1.8rem; margin: 0 auto 24px; border: 3px solid; position: relative; z-index: 1; }
+.step-1 { background: rgba(232,69,10,0.12); border-color: var(--orange); color: var(--orange); }
+.step-2 { background: rgba(43,143,212,0.12); border-color: var(--blue); color: var(--blue); }
+.step-3 { background: rgba(245,200,66,0.12); border-color: var(--yellow); color: var(--yellow); }
+.step-4 { background: rgba(232,69,10,0.12); border-color: var(--orange-light); color: var(--orange-light); }
+.step-item h3 { font-family: 'Fredoka One',cursive; font-size: 1.1rem; margin-bottom: 8px; }
+.step-item p { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+
+
+#viabilidad { padding: 100px 24px; }
+.viab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; max-width: 1000px; margin: 0 auto; }
+.viab-left h2 { font-family: 'Fredoka One',cursive; font-size: clamp(1.8rem,4vw,2.6rem); line-height: 1.2; margin-bottom: 18px; }
+.viab-left p { color: var(--muted); font-size: 0.95rem; line-height: 1.75; margin-bottom: 20px; }
+.viab-list { display: flex; flex-direction: column; gap: 14px; }
+.viab-item { display: flex; align-items: flex-start; gap: 14px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px 18px; }
+.viab-item-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 2px; }
+.viab-item-text h4 { font-weight: 800; font-size: 0.92rem; margin-bottom: 4px; }
+.viab-item-text p { color: var(--muted); font-size: 0.85rem; line-height: 1.5; }
+
+
+#versiones { padding: 100px 24px; background: var(--dark2); border-top: 1px solid var(--card-border); border-bottom: 1px solid var(--card-border); }
+.versions-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; max-width: 900px; margin: 0 auto; }
+.version-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 44px 36px; position: relative; overflow: hidden; transition: transform 0.25s, box-shadow 0.25s; }
+.version-card:hover { transform: translateY(-4px); box-shadow: 0 24px 70px rgba(0,0,0,0.35); }
+.version-card.featured { border-color: rgba(232,69,10,0.4); background: linear-gradient(145deg,#241a16,#1c1c1c); }
+.version-badge { position: absolute; top: 20px; right: 20px; background: var(--orange); color: var(--white); font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; padding: 4px 12px; border-radius: 50px; }
+.version-icon { font-size: 3rem; margin-bottom: 18px; display: block; }
+.version-card h3 { font-family: 'Fredoka One',cursive; font-size: 1.6rem; margin-bottom: 6px; }
+.version-card .engine-tag { font-size: 0.8rem; color: var(--orange); font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 16px; }
+.version-card p { color: var(--muted); font-size: 0.92rem; line-height: 1.65; margin-bottom: 24px; }
+.version-specs { display: flex; flex-direction: column; gap: 10px; }
+.spec-row { display: flex; align-items: center; gap: 10px; font-size: 0.87rem; }
+.spec-row .check { color: var(--orange); }
+.spec-row.blue .check { color: var(--blue); }
+
+
+#testimonios { padding: 100px 24px; }
+.testimonials-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.testimonial-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 30px 26px; position: relative; }
+.testimonial-card::before { content: '"'; position: absolute; top: 16px; right: 20px; font-family: 'Fredoka One',cursive; font-size: 5rem; color: var(--orange); opacity: 0.1; line-height: 1; }
+.testimonial-text { color: #d0d0d0; font-size: 0.92rem; line-height: 1.7; margin-bottom: 22px; font-style: italic; }
+.testimonial-author { display: flex; align-items: center; gap: 12px; }
+.author-avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.95rem; flex-shrink: 0; }
+.av-orange { background: rgba(232,69,10,0.2); color: var(--orange); border: 2px solid rgba(232,69,10,0.3); }
+.av-blue   { background: rgba(43,143,212,0.2); color: var(--blue); border: 2px solid rgba(43,143,212,0.3); }
+.av-yellow { background: rgba(245,200,66,0.2); color: #c9a000; border: 2px solid rgba(245,200,66,0.3); }
+.author-name { font-weight: 800; font-size: 0.9rem; margin-bottom: 2px; }
+.author-role { font-size: 0.78rem; color: var(--muted); }
+
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.78); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.modal-overlay.active { opacity: 1; pointer-events: all; }
+.modal-box { background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 48px 40px; width: 100%; max-width: 420px; position: relative; transform: translateY(20px) scale(0.97); transition: transform 0.3s; text-align: center; }
+.modal-overlay.active .modal-box { transform: translateY(0) scale(1); }
+.modal-close { position: absolute; top: 16px; right: 20px; background: none; border: none; color: var(--muted); font-size: 1.4rem; cursor: pointer; line-height: 1; transition: color 0.2s; }
+.modal-close:hover { color: var(--white); }
+.modal-logo { height: 50px; margin-bottom: 18px; }
+.modal-box h2 { font-family: 'Fredoka One',cursive; font-size: 1.7rem; margin-bottom: 6px; }
+.modal-sub { color: var(--muted); font-size: 0.88rem; margin-bottom: 24px; line-height: 1.55; }
+
+.modal-notice { background: rgba(43,143,212,0.1); border: 1px solid rgba(43,143,212,0.25); border-radius: 10px; padding: 12px 16px; font-size: 0.8rem; color: #a8ceea; line-height: 1.5; margin-bottom: 22px; text-align: left; }
+.divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+.divider::before,.divider::after { content: ''; flex: 1; height: 1px; background: var(--card-border); }
+.divider span { color: var(--muted); font-size: 0.78rem; font-weight: 700; }
+.form-group { margin-bottom: 14px; text-align: left; }
+.form-group label { display: block; font-size: 0.82rem; font-weight: 700; color: var(--muted); margin-bottom: 7px; }
+.form-group input { width: 100%; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 12px 16px; color: var(--white); font-family: 'Nunito',sans-serif; font-size: 0.92rem; transition: border-color 0.2s; outline: none; }
+.form-group input:focus { border-color: var(--orange); }
+.form-group input::placeholder { color: #555; }
+.btn-form { width: 100%; padding: 13px; background: var(--orange); color: var(--white); border: none; border-radius: 10px; font-family: 'Nunito',sans-serif; font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: background 0.2s; margin-top: 6px; }
+.btn-form:hover { background: var(--orange-light); }
+.modal-footer-text { margin-top: 18px; font-size: 0.8rem; color: var(--muted); }
+.modal-footer-text a { color: var(--orange); text-decoration: none; font-weight: 700; }
+.modal-footer-text a:hover { text-decoration: underline; }
+.g_id_signin { display: flex !important; justify-content: center; }
+
+
+#contacto { padding: 100px 24px; background: var(--dark2); border-top: 1px solid var(--card-border); }
+.contact-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; max-width: 900px; margin: 0 auto; }
+.contact-left h2 { font-family: 'Fredoka One',cursive; font-size: clamp(1.8rem,4vw,2.6rem); line-height: 1.2; margin-bottom: 16px; }
+.contact-left p { color: var(--muted); font-size: 0.95rem; line-height: 1.75; margin-bottom: 28px; }
+.contact-link { display: inline-flex; align-items: center; gap: 10px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 16px 22px; text-decoration: none; color: var(--white); font-weight: 700; font-size: 0.95rem; transition: all 0.2s; width: 100%; }
+.contact-link:hover { border-color: var(--orange); background: rgba(232,69,10,0.08); transform: translateX(4px); }
+.contact-link .link-icon { font-size: 1.3rem; }
+.contact-form-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 36px 30px; }
+.contact-form-card h3 { font-family: 'Fredoka One',cursive; font-size: 1.3rem; margin-bottom: 20px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.contact-form-card textarea { width: 100%; background: #252525; border: 1px solid var(--card-border); border-radius: 10px; padding: 12px 16px; color: var(--white); font-family: 'Nunito',sans-serif; font-size: 0.9rem; resize: vertical; min-height: 100px; outline: none; transition: border-color 0.2s; margin-bottom: 14px; }
+.contact-form-card textarea:focus { border-color: var(--orange); }
+.contact-form-card textarea::placeholder { color: #555; }
+
+
+footer { background: #0f0f0f; border-top: 1px solid var(--card-border); padding: 60px 24px 30px; position: relative; z-index: 1; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; max-width: 1140px; margin: 0 auto 50px; }
+.footer-brand img { height: 46px; margin-bottom: 16px; display: block; }
+.footer-brand p { color: var(--muted); font-size: 0.87rem; line-height: 1.7; max-width: 260px; }
+.footer-col h4 { font-weight: 800; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 16px; }
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer-col ul li a { color: #888; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: color 0.2s; }
+.footer-col ul li a:hover { color: var(--white); }
+.footer-bottom { max-width: 1140px; margin: 0 auto; border-top: 1px solid var(--card-border); padding-top: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.footer-bottom p { color: var(--muted); font-size: 0.82rem; }
+.footer-bottom a { color: var(--orange); text-decoration: none; font-weight: 700; }
+
+
+.toast { position: fixed; bottom: 30px; right: 30px; background: #1a1a1a; border: 1px solid var(--card-border); border-radius: 14px; padding: 16px 22px; font-size: 0.9rem; font-weight: 700; z-index: 3000; display: flex; align-items: center; gap: 10px; transform: translateY(80px); opacity: 0; transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1); max-width: 320px; }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-color: rgba(39,174,96,0.4); }
+.toast.success .toast-icon { color: #27ae60; }
+.toast.error { border-color: rgba(232,69,10,0.4); }
+.toast.error .toast-icon { color: var(--orange); }
+.toast-icon { font-size: 1.2rem; }
+
+
+.mobile-menu { display: none; position: fixed; top: 70px; left: 0; right: 0; background: rgba(20,20,20,0.97); backdrop-filter: blur(24px); border-bottom: 1px solid var(--card-border); z-index: 999; padding: 20px 24px; flex-direction: column; gap: 6px; }
+.mobile-menu.open { display: flex; }
+.mobile-menu a { color: var(--white); text-decoration: none; font-weight: 700; font-size: 1rem; padding: 12px 16px; border-radius: 10px; transition: background 0.2s; }
+.mobile-menu a:hover { background: var(--card-bg); }
+.mobile-menu .mobile-divider { height: 1px; background: var(--card-border); margin: 8px 0; }
+
+
+@media (max-width: 960px) {
+  .features-grid { grid-template-columns: repeat(2,1fr); }
+  .steps-grid { grid-template-columns: repeat(2,1fr); gap: 32px; }
+  .steps-grid::before { display: none; }
+  .stats-grid { grid-template-columns: repeat(3,1fr); }
+  .testimonials-grid { grid-template-columns: repeat(2,1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .viab-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  .notice-banner { font-size: 0.76rem; }
+  nav { padding: 12px 20px; }
+  .nav-links, .nav-actions { display: none; }
+  .hamburger { display: flex; }
+  .features-grid { grid-template-columns: 1fr; }
+  .steps-grid { grid-template-columns: 1fr; }
+  .versions-grid { grid-template-columns: 1fr; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .contact-wrap { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+  .form-row { grid-template-columns: 1fr; }
+  .modal-box { padding: 36px 24px; }
+  .stats-grid { grid-template-columns: 1fr; gap: 20px; }
+  .stat-item { border-right: none; border-bottom: 1px solid var(--card-border); padding-bottom: 20px; }
+  .stat-item:last-child { border-bottom: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-blob blob-1"></div>
+<div class="bg-blob blob-2"></div>
+<div class="bg-blob blob-3"></div>
+
+
+<div class="notice-banner" id="noticeBanner">
+  📋 <strong>Sitio informativo</strong> — Esta página tiene como propósito dar a conocer el proyecto MathQuest: Function. <span>El acceso al juego estará disponible en una etapa posterior del desarrollo.</span>
+</div>
+
+
+<nav id="mainNav">
+  <a class="nav-logo" href="#inicio">
+    <img src="MathQuest.jpg" alt="MathQuest: Function" onerror="this.style.display='none'; document.querySelector('.nav-logo-text').style.display='block'">
+    <span class="nav-logo-text">MathQu3st</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#caracteristicas">Características</a></li>
+    <li><a href="#como-funciona">¿Cómo funciona?</a></li>
+    <li><a href="#versiones">Versiones</a></li>
+    <li><a href="#viabilidad">Viabilidad</a></li>
+    <li><a href="#testimonios">Testimonios</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="mailto:mathqueststaff@gmail.com" class="btn-outline">✉ Contáctanos</a>
+    <button class="btn-primary" onclick="openModal()">Registrar interés</button>
+  </div>
+  <button class="hamburger" onclick="toggleMobile()" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#caracteristicas" onclick="toggleMobile()">Características</a>
+  <a href="#como-funciona" onclick="toggleMobile()">¿Cómo funciona?</a>
+  <a href="#versiones" onclick="toggleMobile()">Versiones</a>
+  <a href="#viabilidad" onclick="toggleMobile()">Viabilidad</a>
+  <a href="#testimonios" onclick="toggleMobile()">Testimonios</a>
+  <div class="mobile-divider"></div>
+  <a href="#contacto" onclick="toggleMobile()">Contacto</a>
+  <a href="mailto:mathqueststaff@gmail.com" onclick="toggleMobile()">✉ mathqueststaff@gmail.com</a>
+  <div class="mobile-divider"></div>
+  <button class="btn-primary" onclick="toggleMobile();openModal();" style="border-radius:10px;padding:12px;justify-content:center;border:none;">Registrar interés</button>
+</div>
+
+
+<section id="inicio">
+  <div class="hero-badge">🎮 Proyecto estudiantil en desarrollo activo — CETis No. 113 "Felipe Ángeles"</div>
+
+  <img src="MathQuest.jpg" alt="MathQuest: Function" class="hero-logo" onerror="this.style.display='none'">
+
+  <h1 class="hero-title">
+    Conoce <span class="accent-orange">MathQuest</span><br>
+    <span class="accent-blue">Function</span>
+  </h1>
+
+  <p class="hero-sub">
+    Un videojuego educativo diseñado para transformar la manera en que los estudiantes de nivel medio superior comprenden las funciones matemáticas, combinando tecnología, interacción y pedagogía activa.
+  </p>
+
+  <div class="proyecto-callout">
+    <span class="callout-icon">📌</span>
+    <div class="callout-text">
+      <strong>Sitio de presentación del proyecto.</strong> Esta página tiene como objetivo dar a conocer MathQuest: Function a docentes, instituciones educativas e investigadores interesados. El acceso al videojuego se habilitará en una etapa posterior del desarrollo.
+    </div>
+  </div>
+
+  <div class="hero-ctas">
+    <a href="#caracteristicas" class="btn-big btn-big-primary">Conocer el proyecto</a>
+    <a href="#contacto" class="btn-big btn-big-secondary">Registrar interés</a>
+  </div>
+
+  <div class="hero-platforms">
+    <p>Compatible con</p>
+    <div class="platform-chips">
+      <span class="chip">🪟 Windows</span>
+      <span class="chip">🐧 Linux</span>
+      <span class="chip">🍎 macOS</span>
+      <span class="chip">📱 Android</span>
+      <span class="chip">🍏 iOS</span>
+      <span class="chip">🥽 Realidad Virtual</span>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    Explorar
+  </div>
+</section>
+
+
+<div class="stats-strip">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div class="stat-num">200<span>+</span></div>
+      <div class="stat-label">Posibles errores identificados</div>
+      <div class="stat-note">Mediante simulación con IA educativa</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">2</div>
+      <div class="stat-label">Versiones desarrolladas</div>
+      <div class="stat-note">2D (GameMaker) y 3D (Unreal Engine 5)</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">6<span>+</span></div>
+      <div class="stat-label">Plataformas compatibles</div>
+      <div class="stat-note">Incluyendo PC, móvil y Realidad Virtual</div>
+    </div>
+  </div>
+</div>
+
+<section id="caracteristicas">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">¿Qué es MathQuest?</span>
+      <h2 class="section-title">Una propuesta diferente para<br>enseñar <span class="accent-orange">matemáticas</span></h2>
+      <p class="section-desc">Diseñado con fundamento en teorías pedagógicas reconocidas y desarrollado con tecnología profesional accesible para el entorno educativo mexicano.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon icon-orange">🎯</div>
+        <h3>Aprendizaje activo</h3>
+        <p>El estudiante no solo observa, sino que interactúa directamente con funciones matemáticas en tiempo real: modifica parámetros, analiza comportamientos y observa cambios en las gráficas al instante.</p>
+      </div>
+      <div class="feature-card blue-accent">
+        <div class="feature-icon icon-blue">🤖</div>
+        <h3>IA educativa integrada</h3>
+        <p>Se desarrolló una inteligencia artificial que simula el proceso de aprendizaje de un estudiante de bachillerato, permitiendo identificar más de 200 posibles errores y áreas de dificultad para optimizar el diseño del juego.</p>
+      </div>
+      <div class="feature-card yellow-accent">
+        <div class="feature-icon icon-yellow">⚡</div>
+        <h3>Retroalimentación inmediata</h3>
+        <p>Cada reto dentro del juego ofrece respuesta instantánea. El alumno detecta sus errores en el momento y tiene la oportunidad de corregirlos sin presión, reforzando el aprendizaje de manera gradual.</p>
+      </div>
+      <div class="feature-card blue-accent">
+        <div class="feature-icon icon-blue">🏫</div>
+        <h3>Accesible para toda institución</h3>
+        <p>Gracias a la versión en GameMaker, el juego funciona en computadoras básicas presentes en la mayoría de las escuelas públicas. No se requieren equipos de alto rendimiento ni conexión a internet constante.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon icon-orange">📊</div>
+        <h3>Plataforma de seguimiento docente</h3>
+        <p>Incluye un sistema self-hosted tipo Git que permite a los docentes asignar actividades, visualizar el desempeño de sus alumnos, cargar recursos y gestionar un calendario con recordatorios de entrega.</p>
+      </div>
+      <div class="feature-card yellow-accent">
+        <div class="feature-icon icon-yellow">📚</div>
+        <h3>Alineado al programa SEP</h3>
+        <p>Los contenidos del juego están vinculados al programa oficial de matemáticas para nivel medio superior de la Secretaría de Educación Pública: funciones, dominio, rango, graficación y análisis de cambios.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section id="como-funciona">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Funcionamiento general</span>
+      <h2 class="section-title">¿Cómo está <span class="accent-blue">estructurado</span> el proyecto?</h2>
+      <p class="section-desc">MathQuest: Function sigue un flujo de aprendizaje progresivo, pensado para integrarse de manera natural dentro del entorno escolar.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-item">
+        <div class="step-num step-1">1</div>
+        <h3>Acceso al sistema</h3>
+        <p>El estudiante ingresa con su cuenta institucional. El sistema reconoce su nivel y registra su progreso desde la primera sesión.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-num step-2">2</div>
+        <h3>Contenido progresivo</h3>
+        <p>Los temas se presentan de manera gradual: desde conceptos básicos de funciones hasta análisis de comportamiento de gráficas y derivadas.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-num step-3">3</div>
+        <h3>Interacción y retos</h3>
+        <p>El alumno resuelve situaciones que requieren razonamiento matemático dentro del entorno del videojuego, recibiendo retroalimentación en tiempo real.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-num step-4">4</div>
+        <h3>Seguimiento del docente</h3>
+        <p>El maestro accede a la plataforma para revisar el desempeño de cada alumno, identificar errores frecuentes y planificar el refuerzo necesario.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section id="viabilidad">
+  <div class="container">
+    <div class="viab-grid">
+      <div class="viab-left">
+        <span class="section-tag">Viabilidad técnica</span>
+        <h2>Desarrollado con <span class="accent-orange">herramientas accesibles</span> y sin costos innecesarios</h2>
+        <p>Una de las decisiones más importantes del proyecto fue seleccionar herramientas que no generaran costos de producción, sin sacrificar la calidad del resultado. Tanto los motores de desarrollo como los recursos visuales y de audio fueron elegidos bajo ese criterio.</p>
+        <p>Esto permite que el proyecto sea sostenible, escalable y replicable en otros contextos educativos sin depender de presupuestos elevados.</p>
+      </div>
+      <div class="viab-list">
+        <div class="viab-item">
+          <span class="viab-item-icon">🎮</span>
+          <div class="viab-item-text">
+            <h4>Motores sin costo de licencia</h4>
+            <p>Unreal Engine 5 y GameMaker Studio 2 no generan gastos monetarios para proyectos educativos de este tipo, lo que elimina una de las principales barreras económicas del desarrollo.</p>
+          </div>
+        </div>
+        <div class="viab-item">
+          <span class="viab-item-icon">🎨</span>
+          <div class="viab-item-text">
+            <h4>Sprites y modelos 3D sin costo</h4>
+            <p>Los recursos visuales del juego, incluyendo sprites 2D y modelos tridimensionales, fueron desarrollados internamente o tomados de bibliotecas libres, lo que no genera gastos en la producción de activos gráficos.</p>
+          </div>
+        </div>
+        <div class="viab-item">
+          <span class="viab-item-icon">🖥️</span>
+          <div class="viab-item-text">
+            <h4>Infraestructura propia</h4>
+            <p>La plataforma de seguimiento docente funciona sobre un servidor propio desarrollado en Rust y Python, evitando dependencia de servicios externos de pago.</p>
+          </div>
+        </div>
+        <div class="viab-item">
+          <span class="viab-item-icon">📶</span>
+          <div class="viab-item-text">
+            <h4>Funcionamiento sin internet</h4>
+            <p>La versión local del juego puede ejecutarse en conexión de red básica o sin internet, lo que permite su uso en escuelas con infraestructura limitada.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section id="versiones">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Versiones del juego</span>
+      <h2 class="section-title">Una solución para <span class="accent-yellow">cada</span> institución</h2>
+      <p class="section-desc">El proyecto cuenta con dos versiones funcionales desarrolladas de manera paralela, adaptadas a distintas capacidades tecnológicas.</p>
+    </div>
+    <div class="versions-grid">
+      <div class="version-card featured">
+        <span class="version-badge">Versión Principal</span>
+        <span class="version-icon">🎮</span>
+        <h3>MathQuest 3D</h3>
+        <div class="engine-tag">Unreal Engine 5</div>
+        <p>Experiencia inmersiva con entornos tridimensionales interactivos, gráficos de alta calidad y soporte completo para dispositivos de Realidad Virtual. Diseñada para equipos con mayor capacidad de procesamiento.</p>
+        <div class="version-specs">
+          <div class="spec-row"><span class="check">✦</span> Entornos 3D interactivos</div>
+          <div class="spec-row"><span class="check">✦</span> Soporte para Realidad Virtual</div>
+          <div class="spec-row"><span class="check">✦</span> Visualización dinámica de funciones</div>
+          <div class="spec-row"><span class="check">✦</span> Windows, Linux, macOS, Android, iOS</div>
+          <div class="spec-row"><span class="check">✦</span> Plataforma docente integrada</div>
+        </div>
+      </div>
+      <div class="version-card">
+        <span class="version-icon">🕹️</span>
+        <h3>MathQuest 2D</h3>
+        <div class="engine-tag" style="color:var(--blue)">GameMaker Studio 2</div>
+        <p>Versión ligera y accesible, desarrollada especialmente para computadoras con recursos limitados. Conserva todos los objetivos educativos de la versión principal en un formato 2D funcional y ágil.</p>
+        <div class="version-specs">
+          <div class="spec-row blue"><span class="check">✦</span> Bajo consumo de memoria y procesador</div>
+          <div class="spec-row blue"><span class="check">✦</span> Compatible con equipos básicos de cómputo</div>
+          <div class="spec-row blue"><span class="check">✦</span> Funciona sin conexión a internet</div>
+          <div class="spec-row blue"><span class="check">✦</span> Mini-juegos y retos matemáticos rápidos</div>
+          <div class="spec-row blue"><span class="check">✦</span> Recomendada para escuelas públicas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section id="testimonios">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Retroalimentación recibida</span>
+      <h2 class="section-title">Lo que dicen <span class="accent-orange">expertos</span> y participantes</h2>
+      <p class="section-desc">El proyecto fue evaluado por docentes con trayectoria, especialistas en educación matemática y estudiantes que participaron en las sesiones piloto.</p>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <p class="testimonial-text">"El videojuego logra que los estudiantes piensen activamente sobre las funciones. La retroalimentación inmediata es exactamente lo que muchos alumnos necesitan para identificar y corregir sus errores sin desmotivarse."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar av-orange">JGS</div>
+          <div>
+            <div class="author-name">Mtro. José Guadalupe Sandoval Santoyo</div>
+            <div class="author-role">Doctor en Ciencias de la Educación · IPN Zacatecas</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <p class="testimonial-text">"La plataforma y el videojuego resultan bastante intuitivos incluso con gente como yo que no sabemos de tecnología y es una manera creativa de enseñar, tal como lo hacía mi difunto esposo en su centro de computo."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar av-blue">AR</div>
+          <div>
+            <div class="author-name">Mtra. Andrea Rodríguez Correa</div>
+            <div class="author-role">Docente · Retirada de educación básica</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <p class="testimonial-text">"El videojuego resulta intuitivo y es una manera bastante creativa de hacer que la educación avance y los jovenes aprendan"</p>
+        <div class="testimonial-author">
+          <div class="author-avatar av-yellow">IG</div>
+          <div>
+            <div class="author-name">Mtra. Irene González Gándara</div>
+            <div class="author-role">Docente · Retirada de educación básica</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section id="contacto">
+  <div class="container">
+    <div class="contact-wrap">
+      <div class="contact-left">
+        <span class="section-tag">Contacto</span>
+        <h2>¿Tu institución quiere <span class="accent-orange">conocer más</span> sobre el proyecto?</h2>
+        <p>Estamos en una etapa activa de desarrollo y buscamos establecer contacto con escuelas, docentes e investigadores interesados en la aplicación de videojuegos educativos en el aula.</p>
+        <a href="mailto:mathqueststaff@gmail.com" class="contact-link">
+          <span class="link-icon">✉</span>
+          mathqueststaff@gmail.com
+        </a>
+      </div>
+      <div class="contact-form-card">
+        <h3>Envíanos un mensaje</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre</label>
+            <input type="text" placeholder="Tu nombre completo" id="cf-name">
+          </div>
+          <div class="form-group">
+            <label>Correo electrónico</label>
+            <input type="email" placeholder="tu@correo.com" id="cf-email">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Institución (opcional)</label>
+          <input type="text" placeholder="Nombre de tu escuela o institución" id="cf-inst">
+        </div>
+        <textarea placeholder="¿En qué podemos orientarte? Cuéntanos sobre tu interés en el proyecto MathQuest: Function..." id="cf-msg"></textarea>
+        <button class="btn-form" onclick="sendContactForm()">Enviar mensaje ✦</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="MathQuest.jpg" alt="MathQuest" onerror="this.style.display='none'">
+      <p>Proyecto de videojuego educativo orientado al aprendizaje de funciones matemáticas para estudiantes de nivel medio superior en México, Zacatecas.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Proyecto</h4>
+      <ul>
+        <li><a href="#caracteristicas">Características</a></li>
+        <li><a href="#como-funciona">¿Cómo funciona?</a></li>
+        <li><a href="#versiones">Versiones</a></li>
+        <li><a href="#viabilidad">Viabilidad técnica</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Institución</h4>
+      <ul>
+        <li><a href="#">Zacatecas, Zac.</a></li>
+        <li><a href="#">DGETI · SEP</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contacto</h4>
+      <ul>
+        <li><a href="mailto:mathqueststaff@gmail.com">✉ Correo electrónico</a></li>
+        <li><a href="#contacto">📋 Formulario de contacto</a></li>
+        <li><a href="#testimonios">💬 Testimonios</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 MathQuest: Function — Yerik G. &amp; Manuel M. , Zacatecas</p>
+    <p>Desarrollado con dedicación en <a href="#">Zacatecas, México</a></p>
+  </div>
+</footer>
+
+
+<div class="modal-overlay" id="loginModal" onclick="closeModalOutside(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <img src="MathQuest.jpg" alt="MathQuest" class="modal-logo" onerror="this.style.display='none'">
+    <h2>Registrar interés</h2>
+    <p class="modal-sub">Mantente informado sobre el avance del proyecto y sé de los primeros en recibir acceso cuando esté disponible.</p>
+
+    <div class="modal-notice">
+      📌 <strong>Aviso:</strong> El inicio de sesión en esta etapa corresponde al registro de interés en el proyecto. El acceso al videojuego se habilitará en una fase posterior del desarrollo.
+    </div>
+
+    <div id="g_id_onload"
+         data-client_id="170309571175-f5os4k3epepsbo3i1k6tkt3epdfop8m8.apps.googleusercontent.com"
+         data-callback="handleGoogleSignIn"
+         data-auto_prompt="false">
+    </div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-shape="rectangular"
+         data-theme="filled_black"
+         data-text="continue_with"
+         data-size="large"
+         data-locale="es_MX"
+         data-logo_alignment="left"
+         data-width="340">
+    </div>
+
+    <div class="divider"><span>o con correo electrónico</span></div>
+
+    <div class="form-group">
+      <label>Correo electrónico</label>
+      <input type="email" placeholder="tucorreo@ejemplo.com" id="login-email" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="form-group">
+      <label>Nombre completo</label>
+      <input type="text" placeholder="Tu nombre" id="login-name" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn-form" onclick="doLogin()">Registrar mi interés</button>
+
+    <p class="modal-footer-text">
+      ¿Tienes alguna duda? <a href="mailto:mathqueststaff@gmail.com">Escríbenos directamente</a>
+    </p>
+  </div>
+</div>
+
+
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">✓</span>
+  <span id="toast-msg">Acción completada</span>
+</div>
+
+<script>
+
+(function(){
+  const banner = document.getElementById('noticeBanner');
+  const nav = document.getElementById('mainNav');
+  if(banner && nav){
+    const h = banner.offsetHeight;
+    nav.style.top = h + 'px';
+  }
+})();
+
+window.addEventListener('scroll', function(){
+  const nav = document.getElementById('mainNav');
+  if(window.scrollY > 50){
+    nav.classList.add('scrolled');
+    nav.style.top = '0';
+  } else {
+    nav.classList.remove('scrolled');
+    const banner = document.getElementById('noticeBanner');
+    if(banner) nav.style.top = banner.offsetHeight + 'px';
+  }
+});
+
+
+function openModal(){
+  document.getElementById('loginModal').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('loginModal').classList.remove('active');
+  document.body.style.overflow='';
+}
+function closeModalOutside(e){
+  if(e.target===document.getElementById('loginModal'))closeModal();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+function handleGoogleSignIn(response){
+  if(response.credential){
+    closeModal();
+    showToast('✓','Registro recibido con éxito. Te notificaremos cuando el acceso esté disponible.',true);
+  }
+}
+function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const name=document.getElementById('login-name').value.trim();
+  if(!email||!name){showToast('⚠','Por favor completa todos los campos.',false);return;}
+  if(!email.includes('@')){showToast('⚠','Ingresa un correo electrónico válido.',false);return;}
+  closeModal();
+  showToast('✓','Registro recibido. Te notificaremos cuando el acceso al juego esté disponible.',true);
+}
+
+
+function sendContactForm(){
+  const name=document.getElementById('cf-name').value.trim();
+  const email=document.getElementById('cf-email').value.trim();
+  const msg=document.getElementById('cf-msg').value.trim();
+  if(!name||!email||!msg){showToast('⚠','Por favor completa nombre, correo electrónico y mensaje.',false);return;}
+  if(!email.includes('@')){showToast('⚠','Ingresa un correo electrónico válido.',false);return;}
+  const inst=document.getElementById('cf-inst').value.trim();
+  const subject=encodeURIComponent('Contacto desde MathQuest: Function');
+  const body=encodeURIComponent('Nombre: '+name+'\nCorreo: '+email+(inst?'\nInstitución: '+inst:'')+'\n\nMensaje:\n'+msg);
+  window.location.href='mailto:mathqueststaff@gmail.com?subject='+subject+'&body='+body;
+  showToast('✓','Abriendo tu cliente de correo. Gracias por comunicarte con nosotros.',true);
+}
+
+function showToast(icon,msg,success){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-icon').textContent=icon;
+  document.getElementById('toast-msg').textContent=msg;
+  t.className='toast '+(success?'success':'error');
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t=setTimeout(()=>t.classList.remove('show'),4500);
+}
+function toggleMobile(){
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}
+  });
+},{threshold:0.1});
+document.querySelectorAll('.feature-card,.step-item,.version-card,.testimonial-card,.stat-item,.viab-item').forEach(el=>{
+  el.style.opacity='0';
+  el.style.transform='translateY(24px)';
+  el.style.transition='opacity 0.5s ease,transform 0.5s ease';
+  obs.observe(el);
+});
+
+
+const sections=document.querySelectorAll('section[id]');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  sections.forEach(s=>{if(window.scrollY>=s.offsetTop-140)cur=s.id;});
+  document.querySelectorAll('.nav-links a').forEach(a=>{
+    a.style.color=a.getAttribute('href')==='#'+cur?'var(--white)':'';
+  });
+},{ passive:true });
+</script>
+</body>
+</html>
